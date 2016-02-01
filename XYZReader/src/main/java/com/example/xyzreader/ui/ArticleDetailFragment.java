@@ -15,7 +15,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -53,11 +52,12 @@ public class ArticleDetailFragment extends Fragment implements
     private long mItemId;
     private View mRootView;
     private int mMutedColor = 0xFF333333;
-    private NestedScrollView mScrollView;
+    private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
     //private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private AppBarLayout mAppBarLayout;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     private int mTopInset;
     private CoordinatorLayout mCoordinatorLayout;
@@ -156,58 +156,46 @@ public class ArticleDetailFragment extends Fragment implements
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
-/*        mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
-                mRootView.findViewById(R.id.draw_insets_frame_layout);
-        mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
-            @Override
-            public void onInsetsChanged(Rect insets) {
-                mTopInset = insets.top;
-            }
-        });*/
-
-        mScrollView = (NestedScrollView) mRootView.findViewById(R.id.scrollview);
-
-
-      /*  mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
-            @Override
-            public void onScrollChanged() {
-                mScrollY = mScrollView.getScrollY();
-                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
-                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-                updateStatusBar();
-            }
-        });
-       mCollapsingToolbarLayout = (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsingToolBar);*/
-
-
-
-
+        mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
        // mFab = (FloatingActionButton) mRootView.findViewById(R.id.share_fab);
         mCoordinatorLayout = (CoordinatorLayout) mRootView.findViewById(R.id.textContainer);
+        mAppBarLayout = (AppBarLayout) mRootView.findViewById(R.id.meta_bar);
+          mCollapsingToolbarLayout = (CollapsingToolbarLayout)
+                mRootView.findViewById(R.id.collapsingToolBar);
 
-
-        mStatusBarColorDrawable = new ColorDrawable(0);
-        //mFab.hide();
-/*
-        mFab.setOnClickListener(new View.OnClickListener() {
+/*        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
             @Override
-            public void onClick(View view) {
+            public void onScrollChanged() {
+                mScrollY = mScrollView.getScrollY() + mAppBarLayout.getScrollY() + mCollapsingToolbarLayout.getScrollY();
+                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
+            }
+        });*/
+        mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                mScrollY = mScrollView.getScrollY() - mAppBarLayout.getScrollY() - mCollapsingToolbarLayout.getScrollY();
+                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
+            }
+        });
 
-                startActivityForResult(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-                        .setType("text/plain")
-                        .setText("Some sample text")
-                        .getIntent(), getString(R.string.action_share)), CHOOSER_CONSTANT);
-                */
-/*if (mListener != null) {
-                    mAppBarLayout.removeOnOffsetChangedListener(mListener);
-                }*//*
 
+
+        /*
+        mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                mScrollY = mScrollView.getScrollY();
 
             }
         });
 */
+
+        mStatusBarColorDrawable = new ColorDrawable(0);
+
 
         bindViews();
         updateStatusBar();
@@ -272,15 +260,15 @@ public class ArticleDetailFragment extends Fragment implements
                                 updateStatusBar();
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
 
-                                final CollapsingToolbarLayout mCollapsingToolbarLayout = (CollapsingToolbarLayout)
-                                        mRootView.findViewById(R.id.collapsingToolBar);
+
 
                                 mCollapsingToolbarLayout.setContentScrimColor(mMutedColor);
+
                                 //mFab.setRippleColor(mMutedColor);
                                 //mCollapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.MainTitleText);
                                 mCollapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ToolbarTitleExpanded);
                                 mCollapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.ToolbarTitleCollapsed);
-                                mAppBarLayout = (AppBarLayout) mRootView.findViewById(R.id.meta_bar);
+
                                 mAppBarLayout.addOnOffsetChangedListener(mListener = new AppBarLayout.OnOffsetChangedListener() {
                                     boolean isShowing = false;
                                     int scrollRange = -1;
