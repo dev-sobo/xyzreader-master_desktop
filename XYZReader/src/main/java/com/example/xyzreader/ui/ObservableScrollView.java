@@ -17,9 +17,9 @@
 package com.example.xyzreader.ui;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.ScrollView;
 
 /**
@@ -27,6 +27,13 @@ import android.widget.ScrollView;
  */
 public class ObservableScrollView extends ScrollView {
     private Callbacks mCallbacks;
+    private static final String LOG_TAG = ObservableScrollView.class.getSimpleName();
+
+    @Override
+    public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+        super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+        Log.v(LOG_TAG, "NESTED SCROLL");
+    }
 
     public ObservableScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);

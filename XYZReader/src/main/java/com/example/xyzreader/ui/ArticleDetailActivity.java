@@ -209,7 +209,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         if (mSelectedItemUpButtonFloor == Integer.MAX_VALUE) {
             Log.e(LOG_TAG, "upbutton is incoorect");
         }
-        int upButtonNormalBottom = mTopInset + mUpButton.getHeight();
+        int upButtonNormalBottom =  mTopInset + mUpButton.getHeight();
         mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
         Log.i(LOG_TAG, "upbutton translationY: " + mUpButton.getTranslationY() + '\n'
                 + "selecteditemfloor - upbuttonnormalbottom: " + (mSelectedItemUpButtonFloor - upButtonNormalBottom));

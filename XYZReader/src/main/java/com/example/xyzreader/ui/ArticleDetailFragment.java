@@ -66,6 +66,7 @@ public class ArticleDetailFragment extends Fragment implements
     private int mScrollY;
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
+    private int mOffset;
   //  private FloatingActionButton mFab;
     private AppBarLayout.OnOffsetChangedListener mListener;
 
@@ -165,14 +166,15 @@ public class ArticleDetailFragment extends Fragment implements
           mCollapsingToolbarLayout = (CollapsingToolbarLayout)
                 mRootView.findViewById(R.id.collapsingToolBar);
 
-/*        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
+        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
             @Override
             public void onScrollChanged() {
                 mScrollY = mScrollView.getScrollY() + mAppBarLayout.getScrollY() + mCollapsingToolbarLayout.getScrollY();
                 getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
             }
-        });*/
+        });
+        /*
         mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -181,18 +183,9 @@ public class ArticleDetailFragment extends Fragment implements
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
             }
         });
-
-
-
-        /*
-        mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                mScrollY = mScrollView.getScrollY();
-
-            }
-        });
 */
+
+
 
         mStatusBarColorDrawable = new ColorDrawable(0);
 
@@ -276,25 +269,22 @@ public class ArticleDetailFragment extends Fragment implements
 
                                     @Override
                                     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+                                        mOffset = i;
                                         if (scrollRange == -1) {
                                             scrollRange = appBarLayout.getTotalScrollRange();
                                         }
                                         if (scrollRange + i == 0) {
                                             mCollapsingToolbarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
-                                          //  mFab.hide();
+
                                             isShowing = true;
-                                          /*  if (floatingActionButton != null) {
-                                                floatingActionButton.show();
-                                            }*/
 
 
                                         } else if (isShowing) {
                                             mCollapsingToolbarLayout.setTitle(null);
-                                           // mFab.show();
+
                                             isShowing = false;
-                                            /*if (floatingActionButton != null) {
-                                                floatingActionButton.hide();
-                                            }*/
+
+
                                         }
                                    /* Log.d(LOG_TAG, "Scroll Range: " + String.valueOf(scrollRange));
                                     Log.d(LOG_TAG, "Vertical Offset: " + String.valueOf(i));*/
@@ -322,7 +312,17 @@ public class ArticleDetailFragment extends Fragment implements
             bodyView.setText("N/A");
         }
     }
+    public int getUpButtonFloor() {
+        if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
+            return Integer.MAX_VALUE;
+        }
 
+        if (mIsCard) {
+            return (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY;
+        } else {
+            return (int) ((mPhotoContainerView.getScrollY() +mAppBarLayout.getTranslationY() + mCollapsingToolbarLayout.getScrollY() + mPhotoView.getHeight()) - mScrollY);
+        }
+    }
     private void updateStatusBar() {
         int color = 0;
         if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
@@ -387,18 +387,5 @@ public class ArticleDetailFragment extends Fragment implements
         bindViews();
     }
 
-    public int getUpButtonFloor() {
-        if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
-            return Integer.MAX_VALUE;
-        }
 
-        // account for parallax
-
-        //return mIsCard   ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY : mPhotoView.getHeight() - mScrollY;
-        if (mIsCard) {
-            return (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY;
-        } else {
-            return  mPhotoView.getHeight() - mScrollY;
-        }
-    }
 }
