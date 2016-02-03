@@ -17,4 +17,6 @@ public class ObserableNestedScrollView extends NestedScrollView {
         super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
 
     }
+
+
 }

@@ -166,25 +166,27 @@ public class ArticleDetailFragment extends Fragment implements
           mCollapsingToolbarLayout = (CollapsingToolbarLayout)
                 mRootView.findViewById(R.id.collapsingToolBar);
 
-        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
-            @Override
-            public void onScrollChanged() {
-                mScrollY = mScrollView.getScrollY() + mAppBarLayout.getScrollY() + mCollapsingToolbarLayout.getScrollY();
-                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
-                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-            }
-        });
-        /*
-        mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                mScrollY = mScrollView.getScrollY() - mAppBarLayout.getScrollY() - mCollapsingToolbarLayout.getScrollY();
-                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
-                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-            }
-        });
-*/
+       /* if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
+                @Override
+                public void onScrollChanged() {
+                    mScrollY = mScrollView.getScrollY() + mAppBarLayout.getScrollY() + mCollapsingToolbarLayout.getScrollY();
+                    getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+                    mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
+                }
+            });
+        }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    mScrollY = mScrollView.getScrollY() - mAppBarLayout.getScrollY() - mCollapsingToolbarLayout.getScrollY();
+                    getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+                    mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
+                }
+            });
+        }*/
 
 
         mStatusBarColorDrawable = new ColorDrawable(0);
@@ -276,6 +278,7 @@ public class ArticleDetailFragment extends Fragment implements
                                         if (scrollRange + i == 0) {
                                             mCollapsingToolbarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
 
+
                                             isShowing = true;
 
 
@@ -283,9 +286,10 @@ public class ArticleDetailFragment extends Fragment implements
                                             mCollapsingToolbarLayout.setTitle(null);
 
                                             isShowing = false;
-
-
                                         }
+                                        mScrollY = i;
+                                        getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+                                        mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
                                    /* Log.d(LOG_TAG, "Scroll Range: " + String.valueOf(scrollRange));
                                     Log.d(LOG_TAG, "Vertical Offset: " + String.valueOf(i));*/
                                       //  mFab.show();
@@ -316,11 +320,10 @@ public class ArticleDetailFragment extends Fragment implements
         if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
             return Integer.MAX_VALUE;
         }
-
         if (mIsCard) {
             return (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY;
         } else {
-            return (int) ((mPhotoContainerView.getScrollY() +mAppBarLayout.getTranslationY() + mCollapsingToolbarLayout.getScrollY() + mPhotoView.getHeight()) - mScrollY);
+            return  (mPhotoView.getHeight() - mScrollY);
         }
     }
     private void updateStatusBar() {
