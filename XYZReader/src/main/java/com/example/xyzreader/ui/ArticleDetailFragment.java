@@ -274,6 +274,7 @@ public class ArticleDetailFragment extends Fragment implements
                                         mOffset = i;
                                         if (scrollRange == -1) {
                                             scrollRange = appBarLayout.getTotalScrollRange();
+                                            Log.v(LOG_TAG, "SCROLL_RANGE: " +  scrollRange);
                                         }
                                         if (scrollRange + i == 0) {
                                             mCollapsingToolbarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
@@ -290,8 +291,8 @@ public class ArticleDetailFragment extends Fragment implements
                                         mScrollY = i;
                                         getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
                                         mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-                                   /* Log.d(LOG_TAG, "Scroll Range: " + String.valueOf(scrollRange));
-                                    Log.d(LOG_TAG, "Vertical Offset: " + String.valueOf(i));*/
+                                    Log.d(LOG_TAG, "Scroll Range: " + String.valueOf(scrollRange));
+                                    Log.d(LOG_TAG, "Vertical Offset: " + String.valueOf(i));
                                       //  mFab.show();
                                     }
                                 });
